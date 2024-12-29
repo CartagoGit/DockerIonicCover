@@ -70,7 +70,7 @@ Or with docker compose:
 ```yaml
 services:
     name_service:
-        image: cartagodocker/ssh
+        image: cartagodocker/ionic-cover
         volumes:
-            - ~/.ssh:/root/.ssh:ro
+            - ~/.ssh:/~/.ssh:ro
 ```
