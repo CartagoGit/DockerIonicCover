@@ -6,7 +6,7 @@ https://hub.docker.com/repository/docker/cartagodocker/ionic-cover
 
 ## Description
 
-Image for loading a complete workspace to woek with ionic, angular, capacitor, gradle and android.
+Image for loading a complete workspace for ionic, angular, capacitor, gradle and android.
 
 > This dockerfile use Ubuntu 24.04 and Zsh profile based in cartagodocker/zsh dockerhub image.
 
