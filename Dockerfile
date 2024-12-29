@@ -14,14 +14,15 @@ ARG USER_SHELL=/bin/zsh
 
 # Versiones de instalación
 ARG NODE_VERSION=22
-ARG NPM_VERSION=^10.9.0
+ARG NPM_VERSION=11.0.0
 ARG JAVA_VERSION=17
 ARG GRADLE_VERSION=8.11.1
 ARG ANDROID_API_VERSION=35
 ARG ANDROID_BUILD_TOOLS_VERSION=34.0.0
 ARG BUN_VERSION=1.1.38
-ARG IONIC_CLI_VERSION=^7.2.0
-ARG ANGULAR_VERSION=^19.0.0
+ARG IONIC_CLI_VERSION=7.2.0
+ARG ANGULAR_VERSION=19.0.6
+ARG CAPACITOR_VERSION=6.2.0
 
 # Definición de variables de entorno "home"
 ARG GRADLE_HOME=/usr/local/gradle/gradle-${GRADLE_VERSION}/bin
@@ -138,7 +139,7 @@ RUN eval $(fnm env) && fnm use ${NODE_VERSION} \
     && bun install -g npm@${NPM_VERSION} \
     @angular/cli@${ANGULAR_VERSION} \
     @ionic/cli@${IONIC_CLI_VERSION} \
-    @capacitor/cli@${CAPACITOR} \
+    @capacitor/cli@${CAPACITOR_VERSION} \
     # Hace bun como gestor de paquetes por defecto de angular para aumentar la velocidad de transpilación de angular
     && ng config --global cli.packageManager bun
     # && ionic config set -g npmClient bun <- Todavia es incompatible con bun

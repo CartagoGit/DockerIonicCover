@@ -4,6 +4,21 @@
 
 https://hub.docker.com/repository/docker/cartagodocker/ionic-cover
 
+## Specifications
+
+- Ubuntu 24.04
+- Zsh
+- Node 22
+- Npm 11.0.0
+- Java 17
+- Gradle 8.11.1
+- Android API 35
+- Android Build Tools 34.0.0
+- Bun 1.1.38
+- Ionic CLI 7.2.0
+- Angular 19.0.6
+- Capacitor 6.2.0
+
 ## Description
 
 Image for loading a complete workspace for ionic, angular, capacitor, gradle and android.
