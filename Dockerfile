@@ -74,7 +74,7 @@ RUN getent passwd ${USER_UID} && userdel -r $(getent passwd ${USER_UID} | cut -d
 # Paquetes base y herramientas esenciales de Ubuntu
 # Java, Fast node manager, Node y Bun
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl gnupg wget unzip build-essential git ca-certificates openjdk-${JAVA_VERSION}-jdk-headless \
+    curl gnupg wget unzip build-essential git ssh ca-certificates openjdk-${JAVA_VERSION}-jdk-headless \
     # Instalamos Fast node manager
     && curl -fsSL https://fnm.vercel.app/install | bash -s -- --install-dir ${FNM_HOME} --skip-shell \
     && fnm completions --shell zsh > ${FNM_HOME}/_fnm \
