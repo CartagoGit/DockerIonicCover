@@ -144,8 +144,6 @@ RUN eval $(fnm env) && fnm use ${NODE_VERSION} \
     && ng config --global cli.packageManager bun
     # && ionic config set -g npmClient bun <- Todavia es incompatible con bun
 
-# Configuración de inicio del contenedor
-WORKDIR /app/${PROJECT}
 # Realizamos la entrada al contenedor con el shell zsh
 ENTRYPOINT ["zsh", "-ic"]
 CMD ["tail -f /dev/null"]
