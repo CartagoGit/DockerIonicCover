@@ -18,6 +18,9 @@ ARG CAPACITOR_VERSION=6.2.0
 
 # Definición de variables de entorno "home"
 ARG GRADLE_HOME=/usr/local/gradle/gradle-${GRADLE_VERSION}/bin
+ARG TEMPLATE_HOME=/etc/skel
+
+ARG ANGULAR_CONFIG=/usr/local/angular-config.json
 
 ARG ANDROID_SDK_FOLDER=/usr/local/android
 ARG SDKMANAGER_BIN="${ANDROID_SDK_FOLDER}/cmdline-tools/bin/sdkmanager"
@@ -85,8 +88,6 @@ RUN wget ${GRADLE_URL}${GRADLE_FILE} -P /tmp/gradle \
 # Añade texto necesario para el correcto funcionamiento en el .zshrc
 # El script que lo permite esta en la imagen base de zsh (localizado en /usr/local/bin/add_text_to_zshrc)
 RUN add_text_to_zshrc "$(printf '%s\n' \
-    '# Angular Config' \
-    'ng config -g cli.packageManager bun' \
     '# AutoComplete for angular' \
     'source <(ng completion script)' \
     '# Hacemos que el usuario que sea pueda usar las instalaciones globales de angular' \
@@ -99,12 +100,18 @@ RUN eval $(fnm env) && fnm use ${NODE_DEFAULT_VERSION} \
     @angular/cli@${ANGULAR_VERSION} \
     @ionic/cli@${IONIC_CLI_VERSION} \
     @capacitor/cli@${CAPACITOR_VERSION} \
-    && PATH=/home/${CONTAINER_USER}/.bun/bin:${PATH} \
-    && whoami \
-    && ls -la /home/${CONTAINER_USER} \
-    && ls -la /usr/local/bun \
     && ng analytics off --global \
     # Hace bun como gestor de paquetes por defecto de angular para aumentar la velocidad de transpilación de angular' \
-    && ng config --global cli.packageManager bun 
+    && ng config --global cli.packageManager bun \
     # ionic config set -g npmClient bun <- Todavia es incompatible con bun \
+    # Pasamos la configuración inicial de angular a cada usuario, y a cada nuevo usuario para que todos tengan la misma configuración inicial
+    && mv /root/.angular-config.json ${ANGULAR_CONFIG} \
+    && ln -s ${ANGULAR_CONFIG} ${TEMPLATE_HOME}/.angular-config.json \
+    && chmod -R 777 ${ANGULAR_CONFIG} \
+    && for dir in /home/* /root; do \
+            if [ -d "$dir" ]; then \
+                ln -s ${ANGULAR_CONFIG} $dir/.angular-config.json; \
+                chown -R $(basename $dir):$(basename $dir) $dir; \
+            fi; \
+        done 
 
