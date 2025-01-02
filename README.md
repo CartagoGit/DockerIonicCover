@@ -88,8 +88,9 @@ services:
             - ~/.ssh:/~/.ssh:ro
 ```
 
+---
 
-# For specific inner scripts:
+# For specific inner scripts or SSH specs:
 
 Look the cartagodocker/zsh image documentation in the next link:
 
