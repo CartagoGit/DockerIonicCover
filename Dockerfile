@@ -76,8 +76,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     @ionic/cli@${IONIC_CLI_VERSION} \
     @capacitor/cli@${CAPACITOR_VERSION} \
     # ionic config set -g npmClient bun <- Todavia es incompatible con bun \
-    # Damos permiso de escritura a toda la carpeta de bun donde residen las instalaciones globales
-    && chmod -R 777 /usr/share/bun \
     # Limpiar cache y temporales
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/* /tmp/*
