@@ -78,6 +78,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     # ionic config set -g npmClient bun <- Todavia es incompatible con bun \
     # Limpiar cache y temporales
     && apt-get clean \
-    && rm -rf' /var/lib/apt/lists/*' '/tmp/*'
+    && rm -rf /var/lib/apt/lists/* /tmp/* || true
 
 
