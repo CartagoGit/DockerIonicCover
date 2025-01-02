@@ -3,9 +3,7 @@ FROM cartagodocker/nodebun:latest
 
 # ----------------> VARIABLES
 # Variables que únicamente se usarán en el DockerFile
-# Ha tener en cuenta que las variables ARG no se pasan al contenedor y se borran al terminar la imagen sin crear capas adicionales, ni espacio en la imagen (Testear si pasan o no también al docker-compose)
-ARG PROJECT=${PROJECT:-ionic-cover}
-ARG CONTAINER_USER=${CONTAINER_USER:-ubuntu}
+# Ha tener en cuenta que las variables ARG no se pasan al contenedor y se borran al terminar la imagen sin crear capas adicionales, ni espacio en la imagen 
 
 # Versiones de instalación
 ARG JAVA_VERSION=17
@@ -18,9 +16,6 @@ ARG CAPACITOR_VERSION=6.2.0
 
 # Definición de variables de entorno "home"
 ARG GRADLE_HOME=/usr/local/gradle/gradle-${GRADLE_VERSION}/bin
-ARG TEMPLATE_HOME=/etc/skel
-
-ARG ANGULAR_CONFIG=/usr/local/angular-config.json
 
 ARG ANDROID_SDK_FOLDER=/usr/local/android
 ARG SDKMANAGER_BIN="${ANDROID_SDK_FOLDER}/cmdline-tools/bin/sdkmanager"
@@ -39,7 +34,6 @@ ARG BUILD_TOOLS=${ANDROID_SDK_FOLDER}/build-tools/${ANDROID_BUILD_TOOLS_VERSION}
 # Configurar variables de entorno necesarias para Java y Android
 # A tener en cuenta que las variables de entorno se pasan al contenedor y se mantienen en la imagen
 ENV DEBIAN_FRONTEND=noninteractive \
-    PROJECT=${PROJECT} \
     JAVA_HOME=/usr/lib/jvm/java-${JAVA_VERSION}-openjdk-amd64 \
     ANDROID_SDK_HOME=${ANDROID_SDK_FOLDER} \
     # Se crea para compatibilidad con posibles scripts antiguos que usen ANDROID_HOME con la misma ruta que ANDROID_SDK_HOME
@@ -53,15 +47,11 @@ ENV DEBIAN_FRONTEND=noninteractive \
 # ----------------> ACTUALIZAR PAQUETES BASE Y HERRAMIENTAS ESENCIALES
 # Actualizar paquetes base y herramientas esenciales
 # Paquetes base y herramientas esenciales de Ubuntu
-# Java, Fast node manager, Node y Bun
+# Java, y herramientas necesarias
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    curl gnupg wget unzip build-essential git ssh ca-certificates openjdk-${JAVA_VERSION}-jdk-headless \
-    # Limpiar cache y temporales
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/* tmp/* /root/.cache
-
+    openjdk-${JAVA_VERSION}-jdk-headless \
 # ----------------> INSTALAR ANDROID SDK Y HERRAMIENTAS
-RUN mkdir -p ${ANDROID_SDK_HOME} \
+    && mkdir -p ${ANDROID_SDK_HOME} \
     && cd ${ANDROID_SDK_HOME} \
     && wget -O android.zip ${ANDROID_SDK_URL} \
     && unzip android.zip \
@@ -77,25 +67,20 @@ RUN mkdir -p ${ANDROID_SDK_HOME} \
     # Parche para arreglar problemas desde Android Build Tools 32.0
     && cd ${BUILD_TOOLS} \
     && cp d8 dx && cd lib && cp d8.jar dx.jar \
-    && chmod -R 777 /usr/local/android
-
+    && chmod -R 777 /usr/local/android \
 # # ----------------> INSTALAR GRADLE
-RUN wget ${GRADLE_URL}${GRADLE_FILE} -P /tmp/gradle \
+    && wget ${GRADLE_URL}${GRADLE_FILE} -P /tmp/gradle \
     && unzip /tmp/gradle/${GRADLE_FILE} -d /usr/local/gradle \
     && chmod a+x /usr/local/gradle \
-    && rm -rf /tmp/gradle
-
 # Añade texto necesario para el correcto funcionamiento en el .zshrc
 # El script que lo permite esta en la imagen base de zsh (localizado en /usr/local/bin/add_text_to_zshrc)
-RUN add_text_to_zshrc "$(printf '%s\n' \
+    && add_text_to_zshrc "$(printf '%s\n' \
     '# AutoComplete for angular' \
     'source <(ng completion script)' \
-    '# Hacemos que el usuario que sea pueda usar las instalaciones globales de angular' \
-    )"
-
+    )" \
 # ----------------> INSTALAR Angular CLI y Ionic CLI
 #NODE_DEFAULT_VERSION hereda de cartagodocker/nodebun:latest, cambiar si se requiere otra version de node
-RUN eval $(fnm env) && fnm use ${NODE_DEFAULT_VERSION} \ 
+    && eval $(fnm env) && fnm use ${NODE_DEFAULT_VERSION} \ 
     && bun install -g \
     @angular/cli@${ANGULAR_VERSION} \
     @ionic/cli@${IONIC_CLI_VERSION} \
@@ -105,13 +90,12 @@ RUN eval $(fnm env) && fnm use ${NODE_DEFAULT_VERSION} \
     && ng config --global cli.packageManager bun \
     # ionic config set -g npmClient bun <- Todavia es incompatible con bun \
     # Pasamos la configuración inicial de angular a cada usuario, y a cada nuevo usuario para que todos tengan la misma configuración inicial
-    && mv /root/.angular-config.json ${ANGULAR_CONFIG} \
-    && ln -s ${ANGULAR_CONFIG} ${TEMPLATE_HOME}/.angular-config.json \
-    && chmod -R 777 ${ANGULAR_CONFIG} \
-    && for dir in /home/* /root; do \
-            if [ -d "$dir" ]; then \
-                ln -s ${ANGULAR_CONFIG} $dir/.angular-config.json; \
-                chown -R $(basename $dir):$(basename $dir) $dir; \
-            fi; \
-        done 
+    # Usamos el script de la imagen de zsh
+    && share_config_globally .angular-config.json --to /angular/.angular-config.json \
+    # Damos permiso de escritura a toda la carpeta de bun donde residen las instalaciones globales
+    && chmod -R 777 /usr/share/bun \
+    # Limpiar cache y temporales
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* /tmp/*
+
 
