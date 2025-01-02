@@ -1,8 +1,8 @@
-# DockerNodeBun
+# DockerIonicCover
 
 ## Github
 
-https://github.com/CartagoGit/DockerNodeBun
+https://github.com/CartagoGit/DockerIonicCover
 
 ## DockerHub link
 
@@ -18,7 +18,7 @@ https://hub.docker.com/repository/docker/cartagodocker/ionic-cover
 -   Gradle 8.11.1
 -   Android API 35
 -   Android Build Tools 34.0.0
--   Bun 1.1.38
+-   Bun.js 1.1.42
 -   Ionic CLI 7.2.0
 -   Angular 19.0.6
 -   Capacitor 6.2.0
@@ -29,11 +29,16 @@ Image for loading a complete workspace for ionic, angular, capacitor, gradle and
 
 > This dockerfile use Ubuntu 24.04
 
-> Zsh profile based in [`cartagodocker/zsh dockerhub`](https://hub.docker.com/repository/docker/cartagodocker/zsh/general) image.
+> Zsh profile based in [`cartagodocker/zsh`](https://hub.docker.com/repository/docker/cartagodocker/zsh/general) dockerhub image.
 
-> Bun and Fast Node Manager from [`cartagodocker/nodebun dockerhub`](https://hub.docker.com/repository/docker/cartagodocker/nodebun/general) image.
+> Bun and Fast Node Manager from [`cartagodocker/nodebun`](https://hub.docker.com/repository/docker/cartagodocker/nodebun/general) dockerhub image.
 
 > This dockerfile has curl, unzip, wget, git, ssh installed.
+
+
+---
+
+# Usage
 
 ## Create Image
 
@@ -82,3 +87,10 @@ services:
         volumes:
             - ~/.ssh:/~/.ssh:ro
 ```
+
+
+# For specific inner scripts:
+
+Look the cartagodocker/zsh image documentation in the next link:
+
+[`cartagodocker/zsh`](https://hub.docker.com/repository/docker/cartagodocker/zsh/general)
