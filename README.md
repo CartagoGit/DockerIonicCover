@@ -70,24 +70,6 @@ Just add the next line in the Dockerfile to base the other image on this one.
 FROM cartagodocker/ionic-cover:latest
 ```
 
-## To use ssh in the container. (Neccesary for git with ssh config)
-
-Open container with the next command:
-
-```bash
-docker run --rm -it --name ionic-cover-container -v ~/.ssh:~/.ssh:ro ionic-cover-image
-```
-
-Or with docker compose:
-
-```yaml
-services:
-    name_service:
-        image: cartagodocker/ionic-cover
-        volumes:
-            - ~/.ssh:/~/.ssh:ro
-```
-
 ---
 
 # For specific inner scripts or SSH specs:
