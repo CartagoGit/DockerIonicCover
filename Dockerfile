@@ -1,5 +1,5 @@
 # Base de Ubuntu LTS con zsh
-FROM cartagodocker/nodebun:latest
+FROM cartagodocker/angular:latest
 
 # ----------------> VARIABLES
 # Variables que únicamente se usarán en el DockerFile
@@ -11,7 +11,6 @@ ARG GRADLE_VERSION=8.11.1
 ARG ANDROID_API_VERSION=35
 ARG ANDROID_BUILD_TOOLS_VERSION=34.0.0
 ARG IONIC_CLI_VERSION=7.2.0
-ARG ANGULAR_VERSION=19.0.6
 ARG CAPACITOR_VERSION=6.2.0
 
 # Definición de variables de entorno "home"
@@ -72,26 +71,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     && wget ${GRADLE_URL}${GRADLE_FILE} -P /tmp/gradle \
     && unzip /tmp/gradle/${GRADLE_FILE} -d /usr/local/gradle \
     && chmod a+x /usr/local/gradle \
-# Añade texto necesario para el correcto funcionamiento en el .zshrc
-# El script que lo permite esta en la imagen base de zsh (localizado en /usr/local/bin/add_text_to_zshrc)
-    && add_text_to_zshrc "$(printf '%s\n' \
-    '# AutoComplete for angular' \
-    'source <(ng completion script)' \
-    )" \
 # ----------------> INSTALAR Angular CLI y Ionic CLI
-#NODE_DEFAULT_VERSION hereda de cartagodocker/nodebun:latest, cambiar si se requiere otra version de node
-    && eval $(fnm env) && fnm use ${NODE_DEFAULT_VERSION} \ 
     && bun install -g \
-    @angular/cli@${ANGULAR_VERSION} \
     @ionic/cli@${IONIC_CLI_VERSION} \
     @capacitor/cli@${CAPACITOR_VERSION} \
-    && ng analytics off --global \
-    # Hace bun como gestor de paquetes por defecto de angular para aumentar la velocidad de transpilación de angular' \
-    && ng config --global cli.packageManager bun \
     # ionic config set -g npmClient bun <- Todavia es incompatible con bun \
-    # Pasamos la configuración inicial de angular a cada usuario, y a cada nuevo usuario para que todos tengan la misma configuración inicial
-    # Usamos el script de la imagen de zsh
-    && share_config_globally .angular-config.json --to /angular/.angular-config.json \
     # Damos permiso de escritura a toda la carpeta de bun donde residen las instalaciones globales
     && chmod -R 777 /usr/share/bun \
     # Limpiar cache y temporales
